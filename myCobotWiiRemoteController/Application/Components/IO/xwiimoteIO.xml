@@ -1,0 +1,37 @@
+<Component Model="xwiimotelib.xwiimoteIO" Name="xwiimoteIO" src="Components/IO/xwiimoteIO.xml" Description="Simple component" Device="1">
+  <SchedulingOrder>TopDown</SchedulingOrder>
+  <SchedulingGroup>Default</SchedulingGroup>
+  <fs>10</fs>
+  <Status>0</Status>
+
+
+  <Signals>
+    <Signal Description="Process run time each s." Input="0" Model="CDPSignal&lt;double&gt;" Name="Process Timer" Type="double" Unit="s/s"></Signal>
+    <Signal Description="Process interval [s]." Input="0" Model="CDPSignal&lt;double&gt;" Name="Process Period" Type="double" Unit="s"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Home" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="A" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Left" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Right" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Up" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Down" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="AccelX" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="AccelY" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="AccelZ" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="NunchukC" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="NunchukZ" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="NunchukJoyX" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="NunchukJoyY" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="NunchukAccelX" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="NunchukAccelY" Type="int"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;int&gt;" Name="NunchukAccelZ" Type="int"></Signal>
+    <Signal Input="1" Model="CDPSignal&lt;bool&gt;" Name="Rumble" Type="bool" Routing="..WiiRumble"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="One" Type="bool"></Signal>
+    <Signal Input="0" Model="CDPSignal&lt;bool&gt;" Name="Two" Type="bool"></Signal>
+  </Signals>
+
+  <Alarms>
+    <Alarm Description="A component was suspended!" Name="Component Suspended" Text="Component was suspended!"></Alarm>
+    <Alarm Description="Alarm is triggered (with Text containing the list of errors) when some node of the component (like operator) has configuration fault." Level="Error" Name="ConfigurationFaults"></Alarm>
+  </Alarms>
+
+</Component>

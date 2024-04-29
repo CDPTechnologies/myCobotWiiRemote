@@ -1,0 +1,87 @@
+<Component Model="CDPComponent" Name="IO" src="Components/IO.xml" Description="CDPComponent is an instance of a CDP component model, instantiated using the specification in the component configuration xml file. Components communicate by exchanging Messages, Signal- and Property-values, both inside applications and between applications.">
+  <SchedulingOrder>TopDown</SchedulingOrder>
+  <SchedulingGroup>Default</SchedulingGroup>
+  <fs>10</fs>
+  <Status>0</Status>
+
+  <Signals>
+    <Signal Description="Process run time each s." Input="0" Model="CDPSignal&lt;double&gt;" Name="Process Timer" Type="double" Unit="s/s"></Signal>
+    <Signal Description="Process interval [s]." Input="0" Model="CDPSignal&lt;double&gt;" Name="Process Period" Type="double" Unit="s"></Signal>
+    <Signal Input="1" Model="CDPSignal&lt;bool&gt;" Name="ArmServosControlled" Type="bool" Routing="..PositionMover.ArmServosControlled"></Signal>
+    <Signal Input="1" Model="CDPSignal&lt;bool&gt;" Name="ArmGripperClosed" Type="bool" Routing="..GripperMover.ArmGripperClosed"></Signal>
+    <Signal Input="1" Model="CDPSignal&lt;bool&gt;" Name="WiiRumble" Type="bool" Routing="..ArmDHModel.PositionOutOfRange"></Signal>
+  </Signals>
+
+  <Alarms>
+    <Alarm Description="A component was suspended!" Name="Component Suspended" Text="Component was suspended!"></Alarm>
+    <Alarm Description="Alarm is triggered (with Text containing the list of errors) when some node of the component (like operator) has configuration fault." Level="Error" Name="ConfigurationFaults"></Alarm>
+  </Alarms>
+
+  <Subcomponents>
+    <Operator Expression="Input &gt; 0 ? 0 : 100" Model="Automation.Evaluate&lt;double&gt;" Name="CalcDesiredGripperState" Type="double">
+      <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+      <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmGripperClosed" Type="double" Value="0"></Argument></Operator>
+    <Operator Expression="Input &gt; 0 ? 2 : 0" Model="Automation.Evaluate&lt;double&gt;" Name="CalcGripperControlState" Type="double">
+      <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+      <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmServosControlled" Type="double" Value="0"></Argument></Operator>
+    <Operator Expression="Input &gt; 0 ? 0 : 255" Model="Automation.Evaluate&lt;unsigned char&gt;" Name="CalcLEDGreenColor" Type="unsigned char">
+      <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;unsigned char&gt;" Name="Out" Routing="" Type="unsigned char" Value="0"></Argument>
+      <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;unsigned char&gt;" Name="Input" Routing="..ArmServosControlled" Type="unsigned char" Value="0"></Argument></Operator>
+    <Operator Expression="Input &gt; 0 ? 255 : 0" Model="Automation.Evaluate&lt;unsigned char&gt;" Name="CalcLEDRedColor" Type="unsigned char">
+      <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;unsigned char&gt;" Name="Out" Routing="" Type="unsigned char" Value="0"></Argument>
+      <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;unsigned char&gt;" Name="Input" Routing="..ArmServosControlled" Type="unsigned char" Value="0"></Argument></Operator>
+    <Subcomponent Model="xwiimotelib.xwiimoteIO" Name="xwiimoteIO" src="Components/IO/xwiimoteIO.xml"></Subcomponent>
+    <Subcomponent Model="myCobotLib.myCobotIO" Name="myCobotIO" src="Components/IO/myCobotIO.xml"></Subcomponent>
+  </Subcomponents>
+
+  <Ports>
+    <Port Input="0" Model="CDPPort" Name="WiiButtons">
+
+      <Connections>
+        <Connection Input="0" Model="PullConnection" Name="Home" LocalName="..xwiimoteIO.Home"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="A" LocalName="..xwiimoteIO.A"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Left" LocalName="..xwiimoteIO.Left"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Right" LocalName="..xwiimoteIO.Right"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Up" LocalName="..xwiimoteIO.Up"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Down" LocalName="..xwiimoteIO.Down"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="One" LocalName="..xwiimoteIO.One"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Two" LocalName="..xwiimoteIO.Two"></Connection>
+      </Connections></Port>
+    <Port Input="0" Model="CDPPort" Name="WiiAccel">
+
+      <Connections>
+        <Connection Input="0" Model="PullConnection" Name="AccelX" LocalName="..xwiimoteIO.AccelX"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="AccelY" LocalName="..xwiimoteIO.AccelY"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="AccelZ" LocalName="..xwiimoteIO.AccelZ"></Connection>
+      </Connections></Port>
+    <Port Input="0" Model="CDPPort" Name="NunchukButtons">
+
+      <Connections>
+        <Connection Input="0" Model="PullConnection" Name="C" LocalName="..xwiimoteIO.NunchukC"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Z" LocalName="..xwiimoteIO.NunchukZ"></Connection>
+      </Connections></Port>
+    <Port Input="0" Model="CDPPort" Name="NunchukJoystick">
+
+      <Connections>
+        <Connection Input="0" Model="PullConnection" Name="X" LocalName="..xwiimoteIO.NunchukJoyX"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="Y" LocalName="..xwiimoteIO.NunchukJoyY"></Connection>
+      </Connections></Port>
+    <Port Input="0" Model="CDPPort" Name="NunchukAccel">
+
+      <Connections>
+        <Connection Input="0" Model="PullConnection" Name="AccelX" LocalName="..xwiimoteIO.NunchukAccelX"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="AccelY" LocalName="..xwiimoteIO.NunchukAccelY"></Connection>
+        <Connection Input="0" Model="PullConnection" Name="AccelZ" LocalName="..xwiimoteIO.NunchukAccelZ"></Connection>
+      </Connections></Port>
+    <Port Input="1" Model="CDPPort" Name="DesiredArmPositions" Routing="..ArmDHModel.JointPositions">
+
+      <Connections>
+        <Connection Input="1" Model="PushConnection" Name="Joint1Angle" LocalName="..myCobotIO.Joint1AngleDesired"></Connection>
+        <Connection Input="1" Model="PushConnection" Name="Joint2Angle" LocalName="..myCobotIO.Joint2AngleDesired"></Connection>
+        <Connection Input="1" Model="PushConnection" Name="Joint3Angle" LocalName="..myCobotIO.Joint3AngleDesired"></Connection>
+        <Connection Input="1" Model="PushConnection" Name="Joint4Angle" LocalName="..myCobotIO.Joint4AngleDesired"></Connection>
+        <Connection Input="1" Model="PushConnection" Name="Joint5Angle" LocalName="..myCobotIO.Joint5AngleDesired"></Connection>
+        <Connection Input="1" Model="PushConnection" Name="Joint6Angle" LocalName="..myCobotIO.Joint6AngleDesired"></Connection>
+      </Connections></Port>
+  </Ports>
+</Component>

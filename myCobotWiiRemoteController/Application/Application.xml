@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Application Name="myCobotWiiRemoteController" Model="Application" Description='The myCobotWiiRemote CDP system shows how CDP Studio can be used to control a myCobot 6-DOF robot arm using Wii Remote'>
+  <ApplicationHandle>3</ApplicationHandle>
+  <fs>10</fs>
+  <ClockSync>None</ClockSync>
+  <IsTimeServer>0</IsTimeServer>
+  <OSTimeInterval>120</OSTimeInterval>
+  <CDPVersion>4.12</CDPVersion>
+  <Domain>myCobotWiiRemote</Domain>
+
+  <NetworkInterface Name="ETH0" MAC="" IPAddress="127.0.0.1" SubnetMask="255.255.255.255"></NetworkInterface>
+
+  <Subcomponents>
+    <Subcomponent Name="CDP"        Model="CDP"        src="Components\CDP.xml"></Subcomponent>
+    <Subcomponent Model="CDPComponent" Name="IO" src="Components/IO.xml"></Subcomponent>
+    <Operator Model="OperatorContainer" Name="GripperMover">
+      <Argument CppName="" Input="1" Model="Argument&lt;double&gt;" Name="SpeedCoefficent" Routing="" Type="double" Value="0.050000000000000002776"></Argument>
+
+      <ExecutionControl>
+        <Port Input="1" Model="CDPPort" Name="ArmCurrentOrientation" Routing="..ArmDHModel.ActuatorOrientation">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="aZ" Routing="" Type="double" Value="0"></Connection>
+          </Connections></Port>
+        <Port Input="1" Model="CDPPort" Name="WiiButtons" Routing="..IO.WiiButtons">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="Left" Routing="" Type="bool" Value="0"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="Right" Routing="" Type="bool" Value="0"></Connection>
+          </Connections></Port>
+        <Operator Expression="Input + (Right ? Speed : (Left ? -Speed : 0))" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateX" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentOrientation.aZ" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="Left" Routing="..WiiButtons.Left" Type="bool" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="Right" Routing="..WiiButtons.Right" Type="bool" Value="0"></Argument></Operator>
+        <Port Input="1" Model="CDPPort" Name="NunchukButtons" Routing="..IO.NunchukButtons">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="C" Routing="" Type="bool" Value="0"></Connection>
+          </Connections></Port>
+        <Operator Edge="RisingEdge" Model="Automation.ToggleOperator" Name="Toggle" Type="bool">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;bool&gt;" Name="Out" Routing="" Type="bool" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;bool&gt;" Name="In" Routing="..NunchukButtons.C" Type="bool" Value="0"></Argument></Operator>
+      </ExecutionControl>
+      <Argument CppName="" Input="0" Model="Argument&lt;double&gt;" Name="ArmDesiredRotation" Routing=".EvaluateX.Out" Type="double" Value="0"></Argument>
+      <Argument CppName="" Input="0" Model="Argument&lt;bool&gt;" Name="ArmGripperClosed" Routing=".Toggle.Out" Type="bool" Value="0"></Argument></Operator>
+    <Operator Model="OperatorContainer" Name="OrientationController">
+
+      <ExecutionControl>
+        <Port Input="1" Model="CDPPort" Name="ArmCurrentOrientation" Routing="..ArmDHModel.ActuatorOrientation">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="aX" Routing="" Type="double" Value="3.1415926535900000616"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="aY" Routing="" Type="double" Value="0"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="aZ" Routing="" Type="double" Value="0"></Connection>
+          </Connections></Port>
+        <Port Input="1" Model="CDPPort" Name="WiiButtons" Routing="..IO.WiiButtons">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="A" Routing="" Type="bool" Value="0"></Connection></Connections>
+          </Port>
+        <Port Input="1" Model="CDPPort" Name="WiiAccel" Routing="..IO.WiiAccel">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;int&gt;" Name="AccelX" Routing="" Type="int" Value="0"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;int&gt;" Name="AccelY" Routing="" Type="int" Value="0"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;int&gt;" Name="AccelZ" Routing="" Type="int" Value="0"></Connection></Connections>
+          </Port>
+        <Operator Expression="DoLoopSelf ? LoopSelf : Input" Model="Automation.Evaluate&lt;int&gt;" Name="CalcAccelXStart" Type="int">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;int&gt;" Name="Out" Routing="" Type="int" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;int&gt;" Name="Input" Routing="..WiiAccel.AccelX" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="LoopSelf" Routing="..WiiAccelXStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="DoLoopSelf" Routing="..WiiButtons.A" Type="bool" Value="0"></Argument></Operator>
+        <Operator Expression="DoLoopSelf ? LoopSelf : Input" Model="Automation.Evaluate&lt;int&gt;" Name="CalcAccelYStart" Type="int">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;int&gt;" Name="Out" Routing="" Type="int" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;int&gt;" Name="Input" Routing="..WiiAccel.AccelY" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="LoopSelf" Routing="..WiiAccelYStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="DoLoopSelf" Routing="..WiiButtons.A" Type="bool" Value="0"></Argument></Operator>
+        <Operator Expression="DoLoopSelf ? LoopSelf : Input" Model="Automation.Evaluate&lt;int&gt;" Name="CalcAccelZStart" Type="int">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;int&gt;" Name="Out" Routing="" Type="int" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;int&gt;" Name="Input" Routing="..WiiAccel.AccelZ" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="LoopSelf" Routing="..WiiAccelZStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="DoLoopSelf" Routing="..WiiButtons.A" Type="bool" Value="0"></Argument></Operator>
+        <Operator Expression="Input + (Active ? ((AccelCurrent - AccelStart)*Speed) : 0)" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateX" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentOrientation.aX" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="AccelStart" Routing="..WiiAccelXStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="AccelCurrent" Routing="..WiiAccel.AccelX" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="Active" Routing="..WiiButtons.A" Type="bool" Value="0"></Argument></Operator>
+        <Operator Expression="Input - (Active ? ((AccelCurrent - AccelStart)*Speed) : 0)" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateY" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentOrientation.aY" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="AccelStart" Routing="..WiiAccelYStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="AccelCurrent" Routing="..WiiAccel.AccelY" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="Active" Routing="..WiiButtons.A" Type="bool" Value="0"></Argument></Operator>
+        <Port Input="0" Model="CDPPort" Name="ArmDesiredOrientation" Routing="">
+
+          <Connections>
+            <Connection Input="0" Model="PullConnection" Name="aX" LocalName="..EvaluateX.Out"></Connection>
+            <Connection Input="0" Model="PullConnection" Name="aY" LocalName="..EvaluateY.Out"></Connection>
+            <Connection Input="0" Model="PullConnection" Name="aZ" LocalName="..DesiredGripperRotation"></Connection>
+          </Connections></Port>
+      </ExecutionControl>
+      <Argument CppName="" Input="1" Model="Argument&lt;double&gt;" Name="SpeedCoefficent" Routing="" Type="double" Value="0.0010000000000000000208"></Argument>
+      <Argument CppName="" Input="1" Model="Argument&lt;double&gt;" Name="DesiredGripperRotation" Routing="..GripperMover.ArmDesiredRotation" Type="double" Value="0"></Argument>
+      <Argument CppName="" Input="0" Model="Sequencer.InternalArgument&lt;int&gt;" Name="WiiAccelXStart" Routing=".CalcAccelXStart.Out" Type="int" Value="0"></Argument>
+      <Argument CppName="" Input="0" Model="Sequencer.InternalArgument&lt;int&gt;" Name="WiiAccelYStart" Routing=".CalcAccelYStart.Out" Type="int" Value="0"></Argument>
+      <Argument CppName="" Input="0" Model="Sequencer.InternalArgument&lt;int&gt;" Name="WiiAccelZStart" Routing=".CalcAccelZStart.Out" Type="int" Value="0"></Argument></Operator>
+    <Operator Model="OperatorContainer" Name="PositionMover">
+
+      <ExecutionControl>
+        <Port Input="1" Model="CDPPort" Name="ArmCurrentPosition" Routing="..ArmDHModel.ActuatorPosition">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="X" Routing="" Type="double" Value="200"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="Y" Routing="" Type="double" Value="-70"></Connection>
+            <Connection Input="1" Model="ValuedConnection&lt;double&gt;" Name="Z" Routing="" Type="double" Value="200"></Connection>
+          </Connections></Port>
+        <Port Input="1" Model="CDPPort" Name="WiiButtons" Routing="..IO.WiiButtons">
+
+          <Connections>
+            <Connection Input="1" Model="PushConnection" Name="One" LocalName="..RS.R"></Connection>
+            <Connection Input="1" Model="PushConnection" Name="Two" LocalName="..RS.S"></Connection>
+          </Connections></Port>
+        <Port Input="1" Model="CDPPort" Name="NunchukButtons" Routing="..IO.NunchukButtons">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="Z" Routing="" Type="bool" Value="0"></Connection>
+          </Connections></Port>
+        <Port Input="1" Model="CDPPort" Name="NunchukJoystick" Routing="..IO.NunchukJoystick">
+
+          <Connections>
+            <Connection Input="1" Model="PushConnection" Name="X" LocalName="..EvaluateY.JoystickValue"></Connection>
+            <Connection Input="1" Model="PushConnection" Name="Y" LocalName="..EvaluateX.JoystickValue"></Connection></Connections>
+          </Port>
+        <Port Input="1" Model="CDPPort" Name="NunchukAccel" Routing="..IO.NunchukAccel">
+
+          <Connections>
+            <Connection Input="1" Model="ValuedConnection&lt;int&gt;" Name="AccelY" Routing="" Type="int" Value="0"></Connection>
+          </Connections></Port>
+        <Operator Expression="DoLoopSelf ? LoopSelf : Input" Model="Automation.Evaluate&lt;int&gt;" Name="CalcAccelYStart" Type="int">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;int&gt;" Name="Out" Routing="" Type="int" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;int&gt;" Name="Input" Routing="..NunchukAccel.AccelY" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="LoopSelf" Routing="..AccelYStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="DoLoopSelf" Routing="..NunchukButtons.Z" Type="bool" Value="0"></Argument></Operator>
+        <Operator Expression="Input + JoystickValue * Speed" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateX" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentPosition.X" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="JoystickValue" Routing="" Type="int" Value="0"></Argument></Operator>
+        <Operator Expression="Input - JoystickValue * Speed" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateY" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentPosition.Y" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="JoystickValue" Routing="" Type="int" Value="0"></Argument></Operator>
+        <Port Input="0" Model="CDPPort" Name="ArmDesiredPosition">
+
+          <Connections>
+            <Connection Input="0" Model="PullConnection" Name="X" LocalName="..EvaluateX.Out"></Connection>
+            <Connection Input="0" Model="PullConnection" Name="Y" LocalName="..EvaluateY.Out"></Connection>
+            <Connection Input="0" Model="PullConnection" Name="Z" LocalName="..EvaluateZ.Out"></Connection>
+          </Connections></Port>
+        <Operator Expression="Input - (Active ? ((AccelCurrent - AccelStart)*Speed) : 0)" Model="Automation.Evaluate&lt;double&gt;" Name="EvaluateZ" Type="double">
+          <Argument CppName="m_output" Description="Default output argument" Input="0" Model="DefaultArgument&lt;double&gt;" Name="Out" Routing="" Type="double" Value="0"></Argument>
+          <Argument CppName="m_input" Description="Default input argument" Input="1" Model="DefaultArgument&lt;double&gt;" Name="Input" Routing="..ArmCurrentPosition.Z" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;int&gt;" Name="AccelStart" Routing="..AccelYStart" Type="int" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="AccelCurrent" Routing="..NunchukAccel.AccelY" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;double&gt;" Name="Speed" Routing="..SpeedCoefficent" Type="double" Value="0"></Argument>
+          <Argument CppName="" Description="Named argument to be referred in Expression by its name" Input="1" Model="Argument&lt;bool&gt;" Name="Active" Routing="..NunchukButtons.Z" Type="bool" Value="0"></Argument></Operator>
+        <Operator Model="Automation.RSOperator&lt;bool&gt;" Name="RS" Type="bool">
+          <Argument CppName="m_input" Description="Reset (rising edge sets output to false)" Input="1" Model="DefaultArgument&lt;bool&gt;" Name="R" Routing="" Type="bool" Value="0"></Argument>
+          <Argument CppName="" Description="Set (rising edge sets output to true)" Input="1" Model="DefaultArgument&lt;bool&gt;" Name="S" Routing="" Type="bool" Value="0"></Argument>
+          <Argument CppName="m_output" Description="Delayed Output" Input="0" Model="DefaultArgument&lt;bool&gt;" Name="Q" Routing="" Type="bool" Value="0"></Argument></Operator>
+      </ExecutionControl>
+      <Argument CppName="" Input="1" Model="Argument&lt;double&gt;" Name="SpeedCoefficent" Routing="" Type="double" Value="0.10000000000000000555"></Argument>
+      <Argument CppName="" Input="0" Model="Argument&lt;bool&gt;" Name="ArmServosControlled" Routing=".RS.Q" Type="bool" Value="0"></Argument>
+      <Argument CppName="" Input="0" Model="Sequencer.InternalArgument&lt;int&gt;" Name="AccelYStart" Routing=".CalcAccelYStart.Out" Type="int" Value="0"></Argument></Operator>
+    <Subcomponent Model="PortMUX" Name="HomePosMUX" src="Components/HomePosMUX.xml"></Subcomponent>
+    <Subcomponent Model="PortMUX" Name="HomeOrientationMUX" src="Components/HomeOrientationMUX.xml"></Subcomponent>
+    <Subcomponent Model="Kinematics.DHChain" Name="ArmDHModel" src="Components/ArmDHModel.xml"></Subcomponent>
+  </Subcomponents>
+
+  <Signals>
+    <Signal Name='Process Timer'    Model="CDPSignal&lt;double&gt;" Type='double' Unit='s/s'    Description='Process run time each s.' ></Signal>
+    <Signal Name='Process Period'   Model="CDPSignal&lt;double&gt;" Type='double' Unit='s'      Description='Process interval [s].' ></Signal>
+    <Signal Name="CPULoad"          Model="CDPSignal&lt;double&gt;" Type="double" Unit="0..1"   Description="CPU load [busy/idle, 0..1]."></Signal>
+    <Signal Name="MemUsed"          Model="CDPSignal&lt;double&gt;" Type="double" Unit="KiB"    Description="Memory used [KiB]."></Signal>
+    <Signal Name="MemUsedRelative"  Model="CDPSignal&lt;double&gt;" Type="double" Unit="0..1"   Description="Memory used relative [used/total, 0..1]."></Signal>
+    <Signal Name="MemTotal"         Model="CDPSignal&lt;double&gt;" Type="double" Unit="KiB"    Description="Memory total [KiB]."></Signal>
+    <Signal Name="MemBuffCache"     Model="CDPSignal&lt;double&gt;" Type="double" Unit="KiB"    Description="Memory in buffers and cache [KiB] (only relevant if Linux)."></Signal>
+  </Signals>
+
+  <Alarms>
+    <Alarm Name='Disk Alarm'            Level='Error'   Enabled='1' Trig='1'  Text='No disk-write problem detected.' Description='This alarm is set when something is wrong with the disk or files on the disk.'></Alarm>
+    <Alarm Name="InvalidLicense"        Level="Error" Enabled="1"   Text="Invalid or missing feature license detected."></Alarm>
+    <Alarm Name='Component Suspended'   Level='Warning' Enabled='1' Trig='0'  Text='Component was suspended!' Description='The component was suspended!' ></Alarm>
+    <Alarm Description="Alarm is triggered (with Text containing the list of errors) when some node of the component (like operator) has configuration fault." Level="Error" Name="ConfigurationFaults"></Alarm>
+    <Alarm Description="Configuration save period timed out. The configuration saving has been forcibly enabled, even though DelayConfigurationSave is true.
+    Consider increasing MaxConfigurationSaveDelay." Level="Error" Name="DelayConfigurationSaveAborted" Text="Configuration file write was re-enabled (DelayConfigurationSave overridden)" Trig="1"></Alarm>
+  </Alarms>
+
+  <Parameters>
+    <Parameter Description="The maximum amount of time that DelayConfigurationSave can block the configuration saving. If DelayConfigurationSave
+    is active for longer than this time, configuration saving will be allowed again, and the DelayConfigurationSaveAborted alarm will trigger." Name="MaxConfigurationSaveDelay" PreviousValue="600" Unit="s" Value="600"></Parameter></Parameters>
+
+  <Ports>
+    <Port Input="1" Model="CDPPort" Name="WiiButtons" Routing=".IO.WiiButtons">
+
+      <Connections>
+        <Connection Input="1" Model="ValuedConnection&lt;bool&gt;" Name="Home" Routing="" Type="bool" Value="0"></Connection>
+      </Connections></Port></Ports>
+  
+  
+
+</Application>
