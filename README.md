@@ -19,6 +19,9 @@ The myCobotWiiRemote CDP system shows how CDP Studio can be used to control a my
 * **Wii Nunchuk joystick left/right** - move arm endpoint left/right
 * **Wii Nunchuk tilting while button Z (lower button) is pressed** - move arm endpoint up/down
 
+### Short video that demonstrates the control actions
+https://github.com/CDPTechnologies/myCobotWiiRemote/assets/5851616/2feee99e-a139-40bb-a350-543e1153c8ba
+
 ### Dependencies
 * [xwiimotelib](https://github.com/CDPTechnologies/xwiimotelib) - a CDP library to communicate with Nintendo Wii / Wii U remotes
 * [myCobotLib](https://github.com/CDPTechnologies/myCobotLib) - the IOServer to interface with myCobot PI arms
